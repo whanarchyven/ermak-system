@@ -1,0 +1,15 @@
+# Служебный контейнер: пушит Convex-функции, выставляет env, сидит данные.
+# Контекст сборки: корень репозитория.
+
+FROM node:20-alpine
+WORKDIR /app
+RUN apk add --no-cache curl bash libc6-compat
+COPY ermak-system/package.json ermak-system/package-lock.json ./
+RUN npm install
+COPY ermak-system/ ./
+COPY docker/deployer/ /deployer/
+RUN chmod +x /deployer/entrypoint.sh
+# setup-env.mjs импортит jose/web-push; ESM ищет node_modules рядом со скриптом
+RUN ln -sf /app/node_modules /deployer/node_modules
+ENV CONVEX_AGENT_MODE=anonymous
+ENTRYPOINT ["/deployer/entrypoint.sh"]

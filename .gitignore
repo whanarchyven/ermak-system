@@ -1,0 +1,27 @@
+# Секреты и локальные env (admin key, пароли)
+.env
+.env.local
+
+# Зависимости и сборки
+**/node_modules
+**/.pnp
+**/.pnp.*
+**/.next
+**/out
+**/build
+
+# Логи и отладка
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Прочее
+.DS_Store
+*.pem
+*.tsbuildinfo
+.vercel
+
+# IDE / OS
+.idea
+.vscode

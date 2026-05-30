@@ -1,0 +1,9 @@
+**/node_modules
+**/.next
+**/.git
+**/.DS_Store
+**/npm-debug.log*
+ermak-system/.env*
+pwa/.env*
+.env
+*.md

@@ -1,0 +1,60 @@
+# DEV override: горячая перезагрузка кода (Convex watch + Next dev).
+# Запуск: docker compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+name: ermak
+
+services:
+  deployer:
+    environment:
+      - CONVEX_SELF_HOSTED_URL=http://backend:3210
+      - CONVEX_SELF_HOSTED_ADMIN_KEY=${CONVEX_SELF_HOSTED_ADMIN_KEY:-}
+      - CONVEX_AUTH_SITE_URL=${SITE_URL:-http://localhost:3001}
+      - SEED_ADMIN_EMAIL=${SEED_ADMIN_EMAIL:-admin@ermak.local}
+      - SEED_ADMIN_PASSWORD=${SEED_ADMIN_PASSWORD:-admin123}
+      - DEPLOY_MODE=dev
+    restart: unless-stopped
+    volumes:
+      - ./ermak-system:/app
+      - deployer-node-modules:/app/node_modules
+
+  erp:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.erp
+      target: dev
+    command: ["npm", "run", "dev:frontend"]
+    environment:
+      - NEXT_PUBLIC_CONVEX_URL=${PUBLIC_CONVEX_URL:-http://localhost:3210}
+      - CONVEX_BACKEND_HOST=backend
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./ermak-system:/app
+      - erp-node-modules:/app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+      deployer:
+        condition: service_started
+
+  pwa:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.pwa
+      target: dev
+    command: ["npm", "run", "dev"]
+    environment:
+      - NEXT_PUBLIC_CONVEX_URL=${PUBLIC_CONVEX_URL:-http://localhost:3210}
+      - WATCHPACK_POLLING=true
+    volumes:
+      - ./pwa:/app
+      - pwa-node-modules:/app/node_modules
+    depends_on:
+      backend:
+        condition: service_healthy
+      deployer:
+        condition: service_started
+
+volumes:
+  deployer-node-modules:
+  erp-node-modules:
+  pwa-node-modules:

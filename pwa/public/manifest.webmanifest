@@ -1,0 +1,25 @@
+{
+  "name": "Ермак — еда и доставка",
+  "short_name": "Ермак",
+  "description": "Меню, заказы, акции и баллы кафе «Ермак»",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#F8F5EC",
+  "theme_color": "#371B03",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

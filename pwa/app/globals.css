@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+:root {
+  /* Фирменные цвета Ермак: основной — тёплый коричневый, фон — кремовый */
+  --bk-red: #371b03;        /* основной (кнопки, акценты) */
+  --bk-orange: #5a3210;     /* осветлённый коричневый (градиенты, hover) */
+  --bk-yellow: #c8a06a;     /* золотисто-бежевый акцент */
+  --bk-brown: #371b03;      /* текст/тёмный */
+  --bk-cream: #f8f5ec;      /* фон */
+}
+
+@theme inline {
+  --color-brand: var(--bk-red);
+  --color-brand-orange: var(--bk-orange);
+  --color-brand-yellow: var(--bk-yellow);
+  --color-brand-brown: var(--bk-brown);
+  --color-brand-cream: var(--bk-cream);
+}
+
+html,
+body {
+  background: var(--bk-cream);
+  color: var(--bk-brown);
+  -webkit-tap-highlight-color: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Скрыть скроллбар у горизонтальных лент */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

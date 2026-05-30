@@ -1,0 +1,48 @@
+# ERP (Next.js 15) — сборка для self-hosted Convex.
+# Контекст сборки: корень репозитория.
+
+FROM node:20-alpine AS deps
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY ermak-system/package.json ermak-system/package-lock.json ./
+RUN npm install
+
+# --- DEV: горячая перезагрузка, исходники монтируются томом ---
+FROM node:20-alpine AS dev
+WORKDIR /app
+RUN apk add --no-cache socat curl libc6-compat
+COPY --from=deps /app/node_modules ./node_modules
+COPY docker/app-entrypoint.sh /app-entrypoint.sh
+RUN chmod +x /app-entrypoint.sh
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000 HOSTNAME=0.0.0.0
+EXPOSE 3000
+ENTRYPOINT ["/app-entrypoint.sh"]
+CMD ["npm", "run", "dev:frontend"]
+
+# --- BUILD: production-сборка standalone ---
+FROM node:20-alpine AS builder
+WORKDIR /app
+RUN apk add --no-cache libc6-compat
+COPY --from=deps /app/node_modules ./node_modules
+COPY ermak-system/ ./
+ARG NEXT_PUBLIC_CONVEX_URL
+ENV NEXT_PUBLIC_CONVEX_URL=$NEXT_PUBLIC_CONVEX_URL
+ENV NEXT_TELEMETRY_DISABLED=1
+RUN npm run build
+
+# --- RUNNER: production-запуск ---
+FROM node:20-alpine AS runner
+WORKDIR /app
+RUN apk add --no-cache socat curl libc6-compat
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+ENV PORT=3000 HOSTNAME=0.0.0.0
+COPY docker/app-entrypoint.sh /app-entrypoint.sh
+RUN chmod +x /app-entrypoint.sh
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
+EXPOSE 3000
+ENTRYPOINT ["/app-entrypoint.sh"]
+CMD ["node", "server.js"]
