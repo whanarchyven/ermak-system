@@ -60,9 +60,20 @@ function ensureVapid() {
     envSet("VAPID_PRIVATE_KEY", priv);
     console.log("[setup-env] Сгенерированы VAPID-ключи (Web Push)");
   }
-  const subj = process.env.VAPID_SUBJECT || "mailto:admin@ermak.local";
+  // subject: для prod лучше https://ваш-домен (совпадает с SITE_URL), иначе mailto:
+  let subj = process.env.VAPID_SUBJECT?.trim();
+  if (!subj) {
+    const site = (process.env.CONVEX_AUTH_SITE_URL || "").trim();
+    if (site.startsWith("https://")) {
+      subj = site.replace(/\/$/, "");
+    } else {
+      const email = process.env.SEED_ADMIN_EMAIL || "admin@ermak.local";
+      subj = email.includes("@") ? `mailto:${email}` : "mailto:admin@ermak.local";
+    }
+  }
   if (envGet("VAPID_SUBJECT") !== subj) {
     envSet("VAPID_SUBJECT", subj);
+    console.log(`[setup-env] VAPID_SUBJECT=${subj}`);
   }
 }
 

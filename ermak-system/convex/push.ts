@@ -46,10 +46,21 @@ export const sendWebPush = internalAction({
         sent++;
       } catch (e: any) {
         const code = e?.statusCode;
-        if (code === 404 || code === 410) {
+        // 403 — неверная пара VAPID или подписка создана с другим публичным ключом
+        // 404/410 — подписка устарела
+        if (code === 403 || code === 404 || code === 410) {
           await ctx.runMutation(internal.customer.removePushSubscriptionInternal, { id: s._id });
+          console.warn("[sendWebPush] removed stale subscription", {
+            code,
+            endpoint: s.endpoint.slice(0, 48),
+            hint: code === 403 ? "client must re-enable push in PWA profile" : undefined,
+          });
         } else {
-          console.error("[sendWebPush] error", { code, message: e?.message });
+          console.error("[sendWebPush] error", {
+            code,
+            message: e?.message,
+            body: e?.body,
+          });
         }
       }
     }
