@@ -6,7 +6,7 @@ import { useSiteSettings } from "@/lib/useSiteSettings";
 export default function BrandHeader({ title, subtitle }: { title?: string; subtitle?: string }) {
   const settings = useSiteSettings();
   return (
-    <header className="px-4 pb-6 pt-6 mt-6 text-[var(--bk-brown)] md:rounded-3xl">
+    <header className="pb-6 pt-6 mt-6 text-[var(--bk-brown)]">
       <div className="mx-auto w-full max-w-5xl">
         {/* <div className="flex items-center gap-2">
           <span className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-white">
@@ -16,7 +16,7 @@ export default function BrandHeader({ title, subtitle }: { title?: string; subti
           <span className="text-sm font-medium text-white/70">· {settings.slogan}</span>
         </div> */}
         <h1 className="mt-4 text-2xl font-black leading-tight md:text-4xl">{title ?? settings.homeTitle}</h1>
-        {(subtitle ?? settings.homeSubtitle) && <p className="mt-1 text-sm text-white/85 md:text-base">{subtitle ?? settings.homeSubtitle}</p>}
+        {(subtitle ?? settings.homeSubtitle) && <p className="mt-1 text-sm md:text-base">{subtitle ?? settings.homeSubtitle}</p>}
       </div>
     </header>
   );
