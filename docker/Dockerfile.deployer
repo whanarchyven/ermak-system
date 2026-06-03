@@ -4,7 +4,7 @@
 FROM node:20-alpine
 WORKDIR /app
 RUN apk add --no-cache curl bash libc6-compat
-COPY ermak-system/package.json ermak-system/package-lock.json ./
+COPY ermak-system/package.json ./
 RUN npm install
 COPY ermak-system/ ./
 COPY docker/deployer/ /deployer/

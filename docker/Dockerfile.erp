@@ -4,7 +4,7 @@
 FROM node:20-alpine AS deps
 WORKDIR /app
 RUN apk add --no-cache libc6-compat
-COPY ermak-system/package.json ermak-system/package-lock.json ./
+COPY ermak-system/package.json ./
 RUN npm install
 
 # --- DEV: горячая перезагрузка, исходники монтируются томом ---
