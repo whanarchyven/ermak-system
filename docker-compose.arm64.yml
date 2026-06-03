@@ -1,0 +1,9 @@
+# Override для ARM64 (Orange Pi, Raspberry Pi, AWS Graviton и т.д.)
+# Запуск: docker compose -f docker-compose.yml -f docker-compose.arm64.yml up
+# или make prod (scripts/up.sh подхватит автоматически на aarch64)
+
+services:
+  backend:
+    platform: linux/arm64
+  dashboard:
+    platform: linux/arm64

@@ -1,5 +1,12 @@
 .PHONY: dev prod down stop logs clean keys help
 
+ARCH := $(shell uname -m)
+COMPOSE := docker compose -f docker-compose.yml
+ifneq (,$(filter $(ARCH),aarch64 arm64))
+COMPOSE += -f docker-compose.arm64.yml
+endif
+COMPOSE_DEV := $(COMPOSE) -f docker-compose.dev.yml
+
 help:
 	@echo "make dev    — запуск в dev-режиме (HMR: правки кода применяются сразу)"
 	@echo "make prod   — production-запуск (сборка образов)"
@@ -18,13 +25,13 @@ prod:
 	./scripts/up.sh prod
 
 down:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+	$(COMPOSE_DEV) down
 
 stop:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml stop
+	$(COMPOSE_DEV) stop
 
 logs:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
+	$(COMPOSE_DEV) logs -f
 
 clean:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v
+	$(COMPOSE_DEV) down -v

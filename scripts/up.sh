@@ -10,6 +10,11 @@ COMPOSE=(docker compose -f docker-compose.yml)
 if [ "$MODE" = "dev" ]; then
   COMPOSE+=(-f docker-compose.dev.yml)
 fi
+ARCH="$(uname -m)"
+if [ "$ARCH" = "aarch64" ] || [ "$ARCH" = "arm64" ]; then
+  COMPOSE+=(-f docker-compose.arm64.yml)
+  echo "[up] ARM64 ($ARCH): platform linux/arm64"
+fi
 
 # 1) .env по умолчанию
 if [ ! -f .env ]; then
@@ -30,6 +35,12 @@ for _ in $(seq 1 60); do
   sleep 2
 done
 echo "[up] backend: ${STATUS:-unknown}"
+if [ "${STATUS:-}" != "healthy" ]; then
+  echo "[up] ОШИБКА: backend не стартовал. Логи:" >&2
+  "${COMPOSE[@]}" logs backend --tail=40 >&2 || true
+  echo "[up] Подсказка: на ARM (Orange Pi) проверьте RAM/swap и: docker compose logs backend" >&2
+  exit 1
+fi
 
 # 4) Генерируем admin key (один раз) и кладём в .env
 if ! grep -qE '^CONVEX_SELF_HOSTED_ADMIN_KEY=.+' .env; then
